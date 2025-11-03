@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trucker Logbook - Login</title>
+    <style>
+        /* Using styles from the original file for consistency */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 26px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+        .demo-creds {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 13px;
+            color: #555;
+        }
+        .demo-creds strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h1>🚛 Welcome Back!</h1>
+        <p>Login to your Trucker Logbook</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <p id="errorMessage" class="error-message">Invalid username or password.</p>
+        
+        <div class="demo-creds">
+            <strong>Demo Credentials:</strong>
+            <p style="margin: 5px 0;"><b>Admin:</b><br>Username: admin<br>Password: admin123</p>
+            <p style="margin: 5px 0;"><b>Driver:</b><br>Username: driver1<br>Password: pass123</p>
+        </div>
+    </div>
+
+    <script>
+        // Redirect if already logged in
+        (function() {
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                const user = JSON.parse(loggedInUser);
+                window.location.href = user.role === 'admin' ? 'admin.html' : 'driver.html';
+            }
+        })();
+
+        // Initialize a default set of users in localStorage if it doesn't exist
+        (function initializeUsers() {
+            if (!localStorage.getItem('users')) {
+                const defaultUsers = [
+                    { username: 'admin', password: 'admin123', role: 'admin' },
+                    { username: 'driver1', password: 'pass123', role: 'driver' },
+                    { username: 'driver2', password: 'pass456', role: 'driver' }
+                ];
+                localStorage.setItem('users', JSON.stringify(defaultUsers));
+            }
+        })();
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const foundUser = users.find(u => u.username === username && u.password === password);
+
+            if (foundUser) {
+                // Save user session
+                sessionStorage.setItem('loggedInUser', JSON.stringify(foundUser));
+                // Redirect based on role
+                if (foundUser.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'driver.html';
+                }
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trucker Logbook & Profit Tracker - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.8;
+            color: #444;
+            background-color: #ffffff;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: white;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e6e6e6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+        .navbar .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+        .navbar .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .navbar .nav-links a:hover {
+            color: #667eea;
+        }
+        .btn {
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            text-align: center;
+            padding: 100px 0;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #555;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #fff;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 50px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        /* About Section */
+        .about {
+            padding: 80px 0;
+            background: #f0f2f5;
+        }
+        .about .container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        .about-content, .about-image {
+            flex: 1;
+        }
+        .about-image img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: #bdc3c7;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .footer p {
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .about .container { flex-direction: column; }
+            .navbar .nav-links { display: none; } /* Simple responsive menu handling */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">🚛 TruckerApp</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <a href="index.html" class="btn btn-primary">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Take Control of Your Trucking Business</h1>
+            <p>The all-in-one Logbook & Profit Tracker designed for owner-operators. Effortlessly manage trips, track expenses in dual currencies, and maximize your profitability on the road.</p>
+            <a href="index.html" class="btn btn-primary" style="padding: 15px 30px; font-size: 1.1rem;">Get Started Now</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Everything You Need, Nothing You Don't</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Dual Currency Tracking</h3>
+                    <p>Log expenses in USD or CAD, just like your payslip. The app automatically handles conversions and calculates your profit in both currencies.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Complete Trip Management</h3>
+                    <p>From pickup to delivery, record every detail. Track trip numbers, routes, miles driven, payments, and add notes for each journey.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Detailed Profit Insights</h3>
+                    <p>Instantly see your net profit and profit-per-mile for any period. Make smarter business decisions with data-driven dashboards.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Admin & Driver Roles</h3>
+                    <p>Admins can manage multiple driver profiles, credentials, and view fleet-wide data, while drivers maintain their own private logbooks.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Secure & Private</h3>
+                    <p>Your data is your own. All information is stored securely in your browser, ensuring privacy and offline access to your logs.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Simple & Intuitive</h3>
+                    <p>Designed for truckers, not accountants. A clean, easy-to-use interface means less time on paperwork and more time on the road.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <h2 class="section-title" style="text-align: left; margin-bottom: 20px;">Built for the Modern Trucker</h2>
+                <p>We understand the challenges of being an owner-operator. Juggling logs, receipts, and calculating profits can be a major headache. That's why we built TruckerApp—a straightforward, powerful tool to simplify your financial management.</p>
+                <p style="margin-top: 15px;">Our mission is to empower you with the financial clarity you need to succeed. By providing a clear view of your income and expenses, we help you stay profitable and in control of your business.</p>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1585713181935-d5f622cc261b?q=80&w=2070&auto=format&fit=crop" alt="Truck on the road">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 TruckerApp. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

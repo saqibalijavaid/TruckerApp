@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: #fff; color: #2c3e50; padding: 20px 30px; margin-bottom: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 24px; }
+        #logoutBtn { background: #e74c3c; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: 600; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        h2 { color: #2c3e50; font-size: 22px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        input, textarea { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        button { padding: 12px 24px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        button.danger { background: #e74c3c; }
+        button.danger:hover { background: #c0392b; }
+        .drivers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .driver-card { border: 1px solid #eee; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .driver-card-header { background: #f8f9fa; padding: 15px; display: flex; align-items: center; gap: 15px; }
+        .driver-photo { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #e0e0e0; }
+        .driver-name { font-size: 18px; font-weight: 600; }
+        .driver-username { font-size: 14px; color: #777; }
+        .driver-card-body { padding: 15px; font-size: 14px; color: #555; }
+        .driver-card-body p { margin-bottom: 8px; }
+        .driver-card-actions { padding: 15px; background: #f8f9fa; text-align: right; }
+        /* Modal styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 700px; border-radius: 8px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 20px; }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <button id="logoutBtn">Logout</button>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Register New Driver</h2>
+            <form id="registerDriverForm">
+                <div class="form-grid">
+                    <div class="form-group"><label>Full Name *</label><input type="text" id="newName" required></div>
+                    <div class="form-group"><label>Username *</label><input type="text" id="newUsername" required></div>
+                    <div class="form-group"><label>Password *</label><input type="password" id="newPassword" required></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" id="newPhone"></div>
+                    <div class="form-group"><label>License No.</label><input type="text" id="newLicense"></div>
+                    <div class="form-group"><label>ID No.</label><input type="text" id="newIdNo"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Photo URL</label><input type="text" id="newPhoto" placeholder="https://example.com/photo.jpg"></div>
+                </div>
+                <button type="submit" style="margin-top: 20px;">Register Driver</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Manage Drivers</h2>
+            <div id="driversGrid" class="drivers-grid">
+                <!-- Driver cards will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Driver Modal -->
+    <div id="editDriverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Edit Driver Profile</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="editDriverForm">
+                <input type="hidden" id="editUsername">
+                <div class="form-grid">
+                    <div class="form-group"><label>Full Name</label><input type="text" id="editName"></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" id="editPhone"></div>
+                    <div class="form-group"><label>License Number</label><input type="text" id="editLicense"></div>
+                    <div class="form-group"><label>ID No.</label><input type="text" id="editIdNo"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Address</label><textarea id="editAddress" rows="2"></textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Photo URL</label><input type="text" id="editPhoto"></div>
+                </div>
+                <h3 style="margin-top: 30px; margin-bottom: 10px; font-size: 18px;">Reset Password</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>New Password (optional)</label><input type="password" id="editPassword" placeholder="Leave blank to keep current password"></div>
+                </div>
+                <button type="submit" style="margin-top: 20px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const user = JSON.parse(sessionStorage.getItem('loggedInUser'));
+            if (!user || user.role !== 'admin') {
+                alert('Access Denied.');
+                window.location.href = 'index.html';
+            }
+        })();
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('loggedInUser');
+            window.location.href = 'index.html';
+        });
+
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        function renderDrivers() {
+            const driversGrid = document.getElementById('driversGrid');
+            driversGrid.innerHTML = '';
+            const drivers = users.filter(u => u.role === 'driver');
+            if (drivers.length === 0) {
+                driversGrid.innerHTML = '<p>No drivers registered yet.</p>';
+                return;
+            }
+            drivers.forEach(driver => {
+                const driverCard = `
+                    <div class="driver-card">
+                        <div class="driver-card-header">
+                            <img src="${driver.photo || 'https://via.placeholder.com/50'}" alt="Photo" class="driver-photo">
+                            <div>
+                                <div class="driver-name">${driver.name || 'N/A'}</div>
+                                <div class="driver-username">${driver.username}</div>
+                            </div>
+                        </div>
+                        <div class="driver-card-body">
+                            <p><strong>Phone:</strong> ${driver.phone || 'N/A'}</p>
+                            <p><strong>License:</strong> ${driver.license || 'N/A'}</p>
+                            <p><strong>ID No:</strong> ${driver.idNo || 'N/A'}</p>
+                        </div>
+                        <div class="driver-card-actions">
+                            <button onclick="openEditModal('${driver.username}')">Edit</button>
+                            <button class="danger" onclick="deleteDriver('${driver.username}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+                driversGrid.innerHTML += driverCard;
+            });
+        }
+
+        document.getElementById('registerDriverForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newUsername = document.getElementById('newUsername').value;
+            if (users.some(u => u.username === newUsername)) {
+                alert('Username already exists.');
+                return;
+            }
+            const newUser = {
+                username: newUsername,
+                password: document.getElementById('newPassword').value,
+                role: 'driver',
+                name: document.getElementById('newName').value,
+                phone: document.getElementById('newPhone').value,
+                license: document.getElementById('newLicense').value,
+                idNo: document.getElementById('newIdNo').value,
+                photo: document.getElementById('newPhoto').value,
+                address: '' // Address can be added by driver later
+            };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Driver registered successfully!');
+            this.reset();
+            renderDrivers();
+        });
+
+        function deleteDriver(username) {
+            if (confirm(`Delete driver '${username}'? This will also delete all their logbook data.`)) {
+                users = users.filter(u => u.username !== username);
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.removeItem(`trips_${username}`);
+                localStorage.removeItem(`expenses_${username}`);
+                renderDrivers();
+            }
+        }
+
+        const modal = document.getElementById('editDriverModal');
+        const closeBtn = document.querySelector('.close-btn');
+        closeBtn.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => {
+            if (event.target == modal) modal.style.display = 'none';
+        };
+
+        function openEditModal(username) {
+            const user = users.find(u => u.username === username);
+            if (!user) return;
+            document.getElementById('modalTitle').innerText = `Edit ${user.name || user.username}`;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editName').value = user.name || '';
+            document.getElementById('editPhone').value = user.phone || '';
+            document.getElementById('editLicense').value = user.license || '';
+            document.getElementById('editIdNo').value = user.idNo || '';
+            document.getElementById('editAddress').value = user.address || '';
+            document.getElementById('editPhoto').value = user.photo || '';
+            document.getElementById('editPassword').value = ''; // Clear password field
+            modal.style.display = 'block';
+        }
+
+        document.getElementById('editDriverForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('editUsername').value;
+            const userIndex = users.findIndex(u => u.username === username);
+            if (userIndex === -1) return;
+
+            users[userIndex].name = document.getElementById('editName').value;
+            users[userIndex].phone = document.getElementById('editPhone').value;
+            users[userIndex].license = document.getElementById('editLicense').value;
+            users[userIndex].idNo = document.getElementById('editIdNo').value;
+            users[userIndex].address = document.getElementById('editAddress').value;
+            users[userIndex].photo = document.getElementById('editPhoto').value;
+            
+            const newPassword = document.getElementById('editPassword').value;
+            if (newPassword) {
+                users[userIndex].password = newPassword;
+            }
+
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Driver profile updated!');
+            modal.style.display = 'none';
+            renderDrivers();
+        });
+
+        renderDrivers();
+    </script>
+</body>
+</html>
