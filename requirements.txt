@@ -3,5 +3,5 @@ pymongo==4.6.0
 requests==2.31.0
 gunicorn==21.2.0
 python-dotenv==1.0.0
-cloudinary==1.36.1
+cloudinary==1.44.1
 werkzeug==2.3.7
