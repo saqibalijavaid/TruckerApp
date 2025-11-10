@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}Trip Details{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-bold text-tps-gray-dark">Trip #{{ trip.trip_number }}</h2>
+      <p class="text-tps-gray-medium text-sm mt-1">Status: <span class="font-semibold {{ 'text-tps-green-text' if trip.status == 'active' else 'text-tps-blue-status-text' }}">{{ trip.status|capitalize }}</span></p>
+    </div>
+    <a href="javascript:history.back()" class="btn-secondary text-sm">← Back</a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Content -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <!-- Trip Info Card -->
+      <div class="card">
+        <h3 class="text-lg font-bold mb-4 border-b pb-3">📋 Trip Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-tps-gray-medium font-medium">Pickup Date</p>
+            <p class="text-tps-gray-dark font-semibold">{{ trip.pickup_date }}</p>
+          </div>
+          <div>
+            <p class="text-tps-gray-medium font-medium">Delivery Date</p>
+            <p class="text-tps-gray-dark font-semibold">{{ trip.delivery_date }}</p>
+          </div>
+          <div>
+            <p class="text-tps-gray-medium font-medium">Route</p>
+            <p class="text-tps-gray-dark font-semibold">{{ trip.pickup_city }} → {{ trip.delivery_city }}</p>
+          </div>
+          <div>
+            <p class="text-tps-gray-medium font-medium">Status</p>
+            <p class="text-tps-gray-dark font-semibold">{{ trip.status|capitalize }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignment Card -->
+      <div class="card">
+        <h3 class="text-lg font-bold mb-4 border-b pb-3">👥 Assignments</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-tps-gray-medium font-medium">Driver</p>
+            {% if driver %}
+              <p class="text-tps-gray-dark font-semibold">{{ driver.name }}</p>
+              <p class="text-tps-gray-medium text-xs">{{ driver.email }}</p>
+            {% else %}
+              <p class="text-tps-gray-medium italic">Not assigned</p>
+            {% endif %}
+          </div>
+          <div>
+            <p class="text-tps-gray-medium font-medium">Unit</p>
+            {% if unit %}
+              <p class="text-tps-gray-dark font-semibold">{{ unit.number }}</p>
+              <p class="text-tps-gray-medium text-xs">{{ unit.make }} {{ unit.model }}</p>
+            {% else %}
+              <p class="text-tps-gray-medium italic">Not assigned</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Exchange Rate Info (Only show if completed) -->
+      {% if locked_rate %}
+      <div class="card border-2 border-tps-green-border bg-tps-green-bg">
+        <h3 class="text-lg font-bold mb-3 text-tps-green-border">🔒 Fixed Exchange Rate</h3>
+        <p class="text-sm text-tps-gray-dark mb-2">
+          This trip was completed on <strong>{{ trip.completed_at.strftime('%Y-%m-%d %H:%M') if trip.completed_at }}</strong>
+        </p>
+        <p class="text-2xl font-bold text-tps-green-border">
+          1 USD = {{ locked_rate | round(4) }} CAD
+        </p>
+        <p class="text-xs text-tps-gray-medium mt-2">
+          ✓ This rate is fixed and will not change for financial calculations of this trip.
+        </p>
+      </div>
+      {% else %}
+      <div class="card border-2 border-tps-blue-status-bg bg-tps-blue-status-bg bg-opacity-20">
+        <h3 class="text-lg font-bold mb-3 text-tps-blue-status-text">📊 Current Exchange Rate</h3>
+        <p class="text-2xl font-bold text-tps-blue-status-text">
+          1 USD = {{ current_rate | round(4) }} CAD
+        </p>
+        <p class="text-xs text-tps-gray-medium mt-2">
+          💡 Rate will be locked when trip is marked as completed.
+        </p>
+      </div>
+      {% endif %}
+
+      <!-- Expenses Section -->
+      <div class="card">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b">
+          <h3 class="text-lg font-bold">💸 Expenses</h3>
+          {% if can_add_expense %}
+            <button onclick="showModal('expenseModal')" class="btn-success text-sm">+ Add Expense</button>
+          {% endif %}
+        </div>
+
+        {% if expenses_display %}
+          <div class="space-y-3">
+            {% for exp in expenses_display %}
+              <div class="border border-tps-gray-border rounded-lg p-4 hover:bg-tps-gray-light transition">
+                <div class="flex flex-col md:flex-row justify-between items-start gap-2 mb-2">
+                  <div>
+                    <p class="font-semibold text-tps-gray-dark">{{ exp.category }}</p>
+                    <p class="text-sm text-tps-gray-medium">{{ exp.description }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-bold text-tps-red">{{ exp.original_amount | round(2) }} {{ exp.original_currency }}</p>
+                    {% if exp.original_currency != primary_currency %}
+                      <p class="text-sm text-tps-gray-medium">= {{ exp.converted_amount | round(2) }} {{ primary_currency }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+                <p class="text-xs text-tps-gray-medium">{{ exp.created_at }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-tps-gray-medium text-sm italic">No expenses added yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Summary Sidebar -->
+    <div class="space-y-4">
+      <!-- Financial Summary -->
+      <div class="card">
+        <h3 class="text-lg font-bold mb-4 pb-3 border-b">💰 Financial Summary</h3>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between items-center">
+            <span class="text-tps-gray-medium">Payment:</span>
+            <span class="font-bold text-tps-green-text">{{ payment_primary | round(2) }} {{ primary_currency }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-tps-gray-medium">Expenses:</span>
+            <span class="font-bold text-tps-red">{{ total_expenses_primary | round(2) }} {{ primary_currency }}</span>
+          </div>
+          <div class="border-t pt-3 flex justify-between items-center">
+            <span class="font-semibold">Net Profit:</span>
+            <span class="text-lg font-bold {{ 'text-tps-green-text' if profit_primary >= 0 else 'text-tps-red' }}">
+              {{ profit_primary | round(2) }} {{ primary_currency }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      {% if is_owner and trip.status != 'completed' %}
+        <form method="post" action="{{ url_for('mark_complete', trip_id=trip._id) }}">
+          <button type="submit" class="btn-success w-full text-center text-sm">✓ Mark Complete</button>
+        </form>
+      {% elif trip.status == 'completed' %}
+        <div class="card bg-tps-green-bg border border-tps-green-border">
+          <p class="text-sm text-tps-green-border font-semibold text-center">✓ Trip Completed</p>
+        </div>
+      {% endif %}
+
+      {% if session.get('user_role') == 'driver' and trip.status != 'completed' %}
+        <form method="post" action="{{ url_for('driver_mark_complete', trip_id=trip._id) }}">
+          <button type="submit" class="btn-success w-full text-center text-sm">✓ Complete Trip</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Add Expense Modal -->
+<div id="expenseModal" class="modal-backdrop hidden" onclick="if(event.target.id === 'expenseModal') hideModal('expenseModal')">
+  <div class="bg-white rounded-lg shadow-2xl p-6 max-w-lg w-full mx-4 card">
+    <h2 class="text-xl font-bold mb-4">Add Expense</h2>
+    
+    <form method="post" action="{{ url_for('add_expense', trip_id=trip._id) }}" enctype="multipart/form-data" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-tps-gray-medium mb-1">Category</label>
+        <select name="category" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required>
+          <option value="">-- Select Category --</option>
+          <option value="Fuel">Fuel</option>
+          <option value="Toll">Toll</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Food">Food & Lodging</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-tps-gray-medium mb-1">Amount</label>
+          <input type="number" name="amount" step="0.01" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-tps-gray-medium mb-1">Currency</label>
+          <select name="currency" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark">
+            <option value="USD">USD</option>
+            <option value="CAD">CAD</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-tps-gray-medium mb-1">Description</label>
+        <textarea name="description" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" rows="3" placeholder="Add details..."></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-tps-gray-medium mb-1">Receipt (Optional)</label>
+        <input type="file" name="receipt" accept="image/*,application/pdf" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" />
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 btn-success text-center">Add Expense</button>
+        <button type="button" onclick="hideModal('expenseModal')" class="flex-1 btn-secondary text-center">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

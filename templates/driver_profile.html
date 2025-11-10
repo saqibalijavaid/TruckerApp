@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Driver Profile{% endblock %}
+{% block content %}
+<h3 class="text-2xl font-bold text-tps-gray-dark mb-4">Driver Profile - {{ driver.name }}</h3>
+
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <div class="flex flex-col md:flex-row gap-6">
+    {% if driver.photo %}
+      <div class="flex-shrink-0">
+        <img src="{{ url_for('uploaded_file', filename=driver.photo) }}" alt="photo" class="w-32 h-32 rounded-lg object-cover" />
+      </div>
+    {% endif %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+      <div><strong class="text-gray-500 block">Email:</strong> {{ driver.email }}</div>
+      <div><strong class="text-gray-500 block">Phone:</strong> {{ driver.phone }}</div>
+      <div><strong class="text-gray-500 block">ID:</strong> {{ driver.id_number or '-' }}</div>
+      <div><strong class="text-gray-500 block">License:</strong> {{ driver.driving_license or '-' }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded-lg shadow-md"><div class="text-tps-gray-medium text-sm">Total Trips</div><div class="text-2xl font-bold">{{ total_trips }}</div></div>
+    <div class="bg-white p-4 rounded-lg shadow-md"><div class="text-tps-gray-medium text-sm">Revenue ({{ primary_currency }})</div><div class="text-2xl font-bold text-tps-green-text">{{ "%.2f"|format(revenue_primary) }}</div></div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md overflow-x-auto">
+  <h4 class="text-xl font-bold p-4 border-b">Trips</h4>
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Trip</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Route</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Pickup</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Delivery</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Payment ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Expenses ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Profit ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-tps-gray-table">
+      {% for t in trips %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.trip_number }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.route }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.pickup_date }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.delivery_date }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-tps-green-text font-bold">{{ "%.2f"|format(t.payment_primary) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-tps-red font-bold">{{ "%.2f"|format(t.expenses_primary) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap font-bold {{ 'text-tps-green-text' if t.profit_primary >= 0 else 'text-tps-red' }}">{{ "%.2f"|format(t.profit_primary) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap"><a class="bg-tps-blue-dark hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-xs font-semibold" href="{{ url_for('trip_detail', trip_id=t._id) }}">View</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

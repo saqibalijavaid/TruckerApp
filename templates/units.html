@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Units{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <h3 class="text-2xl font-bold text-tps-gray-dark">Fleet Units</h3>
+    <a class="bg-tps-blue-dark hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" href="{{ url_for('new_unit') }}">+ Add Unit</a>
+</div>
+
+<div class="bg-white rounded-lg shadow-md overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Make/Model</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Expenses ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-tps-gray-table">
+      {% for u in units %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium">{{ u.number }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ u.make }} {{ u.model }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="font-medium text-tps-red">{{ primary_currency }} {{ "%.2f"|format(u.total_expenses_primary) }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <a class="bg-tps-blue-dark hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-xs font-semibold" href="{{ url_for('unit_detail', unit_id=u._id) }}">View</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

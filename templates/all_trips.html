@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}All Trips{% endblock %}
+{% block content %}
+<h3 class="text-2xl font-bold text-tps-gray-dark mb-4">All Trips</h3>
+<div class="bg-white rounded-lg shadow-md overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-50 border-b border-tps-gray-table">
+      <tr>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Trip #</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Driver</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Route</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Payment ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Expenses ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Profit ({{ primary_currency }})</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Status</th>
+        <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-tps-gray-table">
+      {% for t in trips %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-tps-gray-dark">{{ t.trip_number }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.driver_name or '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.unit_number or '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ t.pickup_city }} → {{ t.delivery_city }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-tps-green-text font-bold">{{ "%.2f"|format(t.payment_primary) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-tps-red font-bold">{{ "%.2f"|format(t.expenses_primary) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap font-bold {{ 'text-tps-green-text' if t.profit_primary >= 0 else 'text-tps-red' }}">{{ "%.2f"|format(t.profit_primary) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-full {{ 'bg-tps-green-bg text-tps-green-border' if t.status == 'active' else 'bg-tps-blue-status-bg text-tps-blue-status-text' }}">
+              {{ t.status|capitalize }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <a class="bg-tps-blue-dark hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-xs font-semibold" href="{{ url_for('trip_detail', trip_id=t._id) }}">View</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

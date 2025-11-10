@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Create New Trip{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+    <h2 class="text-2xl md:text-3xl font-bold text-tps-gray-dark">Create New Trip</h2>
+    <a href="{{ url_for('all_trips') }}" class="btn-secondary text-sm">← Back to Trips</a>
+  </div>
+
+  <div class="card">
+    <form method="post" action="{{ url_for('new_trip') }}" class="space-y-6">
+      
+      <!-- Trip Info Section -->
+      <fieldset class="border border-tps-gray-border rounded-lg p-4 space-y-4">
+        <legend class="text-lg font-semibold text-tps-gray-dark px-2">Trip Information</legend>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Trip Number</label>
+            <input type="text" name="trip_number" value="{{ default_trip_number }}" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Status</label>
+            <select name="status" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark">
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Pickup Date</label>
+            <input type="date" name="pickup_date" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Delivery Date</label>
+            <input type="date" name="delivery_date" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Location Section -->
+      <fieldset class="border border-tps-gray-border rounded-lg p-4 space-y-4">
+        <legend class="text-lg font-semibold text-tps-gray-dark px-2">Route Information</legend>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Pickup City</label>
+            <input type="text" name="pickup_city" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Delivery City</label>
+            <input type="text" name="delivery_city" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" required />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Assignment Section -->
+      <fieldset class="border border-tps-gray-border rounded-lg p-4 space-y-4">
+        <legend class="text-lg font-semibold text-tps-gray-dark px-2">Assignment</legend>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Assign Driver (Optional)</label>
+            <select name="driver_id" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark">
+              <option value="">-- Select Driver --</option>
+              {% for driver in drivers %}
+                <option value="{{ driver._id }}">{{ driver.name }} ({{ driver.email }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-tps-gray-medium mb-2">Assign Unit (Optional)</label>
+            <select name="unit_id" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark">
+              <option value="">-- Select Unit --</option>
+              {% for unit in units %}
+                <option value="{{ unit._id }}">{{ unit.number }} ({{ unit.make }} {{ unit.model }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Payment Section - Single Field with Currency Toggle -->
+      <fieldset class="border border-tps-green-border bg-tps-green-bg rounded-lg p-4 space-y-4">
+        <legend class="text-lg font-semibold text-tps-green-border px-2">💰 Payment</legend>
+        
+        <div class="bg-blue-50 border border-tps-blue-status-bg rounded p-3 mb-4 text-sm text-tps-blue-status-text">
+          <strong>Live Exchange Rate:</strong> 1 USD = {{ live_exchange_rate | round(4) }} CAD
+        </div>
+        
+        <div class="space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-tps-gray-medium mb-2">Payment Amount</label>
+              <input type="number" name="payment_amount" step="0.01" class="w-full px-3 py-2 border border-tps-gray-border rounded-md focus:outline-none focus:ring-2 focus:ring-tps-blue-dark" placeholder="0.00" required />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-tps-gray-medium mb-2">Currency</label>
+              <div class="flex gap-2">
+                <label class="flex items-center gap-2 cursor-pointer flex-1">
+                  <input type="radio" name="payment_currency" value="USD" checked class="cursor-pointer" />
+                  <span class="text-sm font-medium">USD</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer flex-1">
+                  <input type="radio" name="payment_currency" value="CAD" class="cursor-pointer" />
+                  <span class="text-sm font-medium">CAD</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div id="conversionInfo" class="bg-white border border-tps-gray-border rounded p-3 text-sm text-tps-gray-medium hidden">
+            <strong>Converted to USD:</strong> <span id="convertedAmount">0.00</span> USD
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Form Actions -->
+      <div class="flex gap-3 pt-6">
+        <button type="submit" class="btn-success flex-1 md:flex-none text-center">✓ Create Trip</button>
+        <a href="{{ url_for('all_trips') }}" class="btn-secondary flex-1 md:flex-none text-center">✕ Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const exchangeRate = {{ live_exchange_rate }};
+  const amountInput = document.querySelector('input[name="payment_amount"]');
+  const currencyRadios = document.querySelectorAll('input[name="payment_currency"]');
+  const conversionInfo = document.getElementById('conversionInfo');
+  const convertedAmount = document.getElementById('convertedAmount');
+
+  function updateConversion() {
+    const amount = parseFloat(amountInput.value) || 0;
+    const currency = document.querySelector('input[name="payment_currency"]:checked').value;
+    
+    if (currency === 'CAD') {
+      const usd = amount / exchangeRate;
+      convertedAmount.textContent = usd.toFixed(2);
+      conversionInfo.classList.remove('hidden');
+    } else {
+      conversionInfo.classList.add('hidden');
+    }
+  }
+
+  amountInput.addEventListener('input', updateConversion);
+  currencyRadios.forEach(radio => radio.addEventListener('change', updateConversion));
+</script>
+{% endblock %}

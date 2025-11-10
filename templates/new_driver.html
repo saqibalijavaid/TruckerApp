@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add Driver{% endblock %}
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
+  <h3 class="text-2xl font-bold text-tps-gray-dark mb-6">Add Driver</h3>
+  <form method="post" action="{{ url_for('new_driver') }}" enctype="multipart/form-data" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input name="first_name" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="First name" required/>
+      <input name="last_name" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Last name (optional)" />
+      <input name="email" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Email (driver@example.com)" type="email" required />
+      <input name="phone" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Phone" />
+      <input name="id_number" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="ID number" />
+      <input name="driving_license" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Driving license number" />
+      <input name="password" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Password (set here for driver)" type="password" required />
+      <div>
+        <label class="block text-sm font-medium text-tps-gray-medium mb-1">Photo (optional)</label>
+        <input type="file" name="photo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-tps-blue-dark file:text-white hover:file:bg-opacity-90"/>
+      </div>
+    </div>
+
+    <div class="flex gap-2 pt-4">
+      <button class="bg-tps-green hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" type="submit">Create Driver</button>
+      <a class="bg-tps-gray-medium hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" href="{{ url_for('drivers') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

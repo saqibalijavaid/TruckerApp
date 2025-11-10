@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Driver Created{% endblock %}
+{% block content %}
+<div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+  <h3 class="text-2xl font-bold text-tps-gray-dark mb-4">Driver Account Created</h3>
+  <div class="space-y-3">
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    <div>
+      <p class="font-semibold">Temporary password (copy and share securely):</p>
+      <div class="bg-tps-gray-extralight p-4 rounded-lg my-2">
+        <code class="text-lg font-mono">{{ password }}</code>
+      </div>
+      <p class="text-tps-gray-medium text-sm">The password will not be stored in plaintext. Copy it now — it will not be shown again.</p>
+    </div>
+  </div>
+
+  <div class="flex gap-2 mt-6">
+    <a class="bg-tps-blue-dark hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" href="{{ url_for('drivers') }}">Back to Drivers</a>
+    <a class="bg-tps-gray-medium hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" href="{{ url_for('owner_dashboard') }}">Owner Dashboard</a>
+  </div>
+</div>
+{% endblock %}

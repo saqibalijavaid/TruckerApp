@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Drivers - Trucker Profit{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <h2 class="text-2xl md:text-3xl font-bold text-tps-gray-dark">Drivers Management</h2>
+    <a href="{{ url_for('new_driver') }}" class="btn-primary text-sm md:text-base">➕ Add New Driver</a>
+  </div>
+
+  <!-- Drivers List -->
+  {% if drivers %}
+    <div class="card">
+      <div class="table-container">
+        <table class="w-full text-xs md:text-sm">
+          <thead class="bg-tps-gray-light">
+            <tr class="border-b border-tps-gray-table-border">
+              <th class="px-3 md:px-6 py-3 text-left font-semibold text-tps-gray-medium">Name</th>
+              <th class="px-3 md:px-6 py-3 text-left font-semibold text-tps-gray-medium hidden sm:table-cell">Email</th>
+              <th class="px-3 md:px-6 py-3 text-left font-semibold text-tps-gray-medium hidden md:table-cell">Phone</th>
+              <th class="px-3 md:px-6 py-3 text-left font-semibold text-tps-gray-medium">Trips</th>
+              <th class="px-3 md:px-6 py-3 text-left font-semibold text-tps-gray-medium">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-tps-gray-table-border">
+            {% for d in drivers %}
+              <tr class="hover:bg-tps-gray-light transition duration-150">
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <div class="font-semibold text-tps-gray-dark">{{ d.name }}</div>
+                  <div class="text-xs text-tps-gray-medium sm:hidden">{{ d.email }}</div>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap hidden sm:table-cell text-tps-gray-dark">{{ d.email }}</td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap hidden md:table-cell text-tps-gray-dark">{{ d.phone or '-' }}</td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-tps-blue-status-bg text-tps-blue-status-text">
+                    {{ d.trips_count }}
+                  </span>
+                </td>
+                <td class="px-3 md:px-6 py-4 whitespace-nowrap">
+                  <a href="{{ url_for('driver_profile', driver_id=d._id) }}" class="btn-primary text-xs py-1 px-2 md:px-3">View</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="card text-center py-12">
+      <p class="text-tps-gray-medium text-lg mb-4">📭 No drivers yet</p>
+      <a href="{{ url_for('new_driver') }}" class="btn-primary">Create First Driver</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

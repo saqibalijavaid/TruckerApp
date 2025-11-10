@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Unit {{ unit.number }}{% endblock %}
+
+{% block content %}
+<h3 class="text-2xl font-bold text-tps-gray-dark mb-4">Unit {{ unit.number }}</h3>
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <div class="text-sm text-tps-gray-medium">Make / Model</div>
+  <div class="font-semibold text-lg">{{ unit.make }} {{ unit.model }}</div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md">
+  <div class="p-4 border-b flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+    <div>
+      <h4 class="text-xl font-bold">Truck Expenses</h4>
+      <p class="text-sm text-tps-gray-medium mt-1">
+        Totals ({{ primary_currency }}): Expenses: <span class="font-bold text-tps-red">{{ "%.2f"|format(unit_expenses_primary) }}</span> | Revenue: <span class="font-bold text-tps-green-text">{{ "%.2f"|format(revenue_primary) }}</span>
+      </p>
+    </div>
+    {% if session.get('user_role') == 'owner' %}
+      <button class="bg-tps-blue-dark hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold text-sm self-start sm:self-center" onclick="showModal('unitExpenseModal')">+ Add Unit Expense</button>
+    {% endif %}
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Category</th>
+          <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+          <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Currency</th>
+          <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Description</th>
+          <th class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Receipt</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-tps-gray-table">
+        {% for e in unit.expenses %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">{{ e.created_at if e.created_at else "" }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ e.category }}</td>
+            <td class="px-6 py-4 whitespace-nowrap font-medium {{ 'text-tps-green-text' if e.amount >= 0 else 'text-tps-red' }}">{{ "%.2f"|format(e.amount) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ e.currency }}</td>
+            <td class="px-6 py-4">{{ e.description or '' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{% if e.receipt %}<a href="{{ url_for('uploaded_file', filename=e.receipt) }}" target="_blank" class="text-blue-600 hover:underline">View</a>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Unit Expense Modal -->
+<div id="unitExpenseModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4 modal-backdrop">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto">
+    <div class="p-4 border-b flex justify-between items-center">
+      <h3 class="text-xl font-bold">Add Unit Expense</h3>
+      <button onclick="hideModal('unitExpenseModal')" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+    </div>
+    <form method="post" action="{{ url_for('add_unit_expense', unit_id=unit._id) }}" enctype="multipart/form-data" class="p-6 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input name="category" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Category" required />
+        <input name="amount" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" type="number" step="0.01" placeholder="Amount" required />
+        <select name="currency" class="w-full px-3 py-2 border border-tps-gray-border rounded-md"><option value="USD">USD</option><option value="CAD">CAD</option></select>
+      </div>
+      <div>
+        <input name="description" class="w-full px-3 py-2 border border-tps-gray-border rounded-md" placeholder="Description (optional)" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-tps-gray-medium mb-1">Receipt (optional)</label>
+        <input type="file" name="receipt" accept="image/*,application/pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-tps-blue-dark file:text-white hover:file:bg-opacity-90"/>
+      </div>
+      <div class="flex gap-2 pt-4">
+        <button class="bg-tps-green hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" type="submit">Add Expense</button>
+        <button type="button" class="bg-tps-gray-medium hover:bg-opacity-90 text-white px-4 py-2 rounded-md font-semibold" onclick="hideModal('unitExpenseModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
